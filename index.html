@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Holesky Block Height</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.8.1/dist/ethers.min.js"></script>
+</head>
+<body>
+  <h2>Check Holesky Block Height</h2>
+  <button id="getBlockButton">Get Current Block</button>
+  <p id="blockInfo"></p>
+
+  <script>
+    const button = document.getElementById('getBlockButton');
+    const output = document.getElementById('blockInfo');
+
+    button.onclick = async () => {
+      if (typeof window.ethereum === 'undefined') {
+        output.innerText = "MetaMask is not installed.";
+        return;
+      }
+
+      try {
+        // Request account access
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+        const provider = new ethers.BrowserProvider(window.ethereum);
+
+        const network = await provider.getNetwork();
+        if (network.chainId !== 17000n) {
+          output.innerText = "Please switch MetaMask to the Holesky testnet.";
+          return;
+        }
+
+        const blockNumber = await provider.getBlockNumber();
+        output.innerText = `Current Holesky block number: ${blockNumber}`;
+      } catch (error) {
+        output.innerText = `Error: ${error.message}`;
+      }
+    };
+  </script>
+</body>
+</html>
