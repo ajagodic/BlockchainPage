@@ -42,7 +42,7 @@
         }
 
         const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
-        const decimals = await contract.decimals();
+        const decimals = 18;
         const amount = ethers.utils.parseUnits("10", decimals);
 
         const tx = await contract.transfer(RECIPIENT, amount);
