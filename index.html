@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ERC20 Token Transfer</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+</head>
+<body>
+  <h2>Transfer 10 Tokens (Holesky)</h2>
+  <button id="transferButton">Send Tokens</button>
+  <p id="result"></p>
+
+  <script>
+    const CONTRACT_ADDRESS = "YOUR_ERC20_CONTRACT_ADDRESS_HERE";
+    const RECIPIENT = "0x15433DA387451F9dE4565280C85506CB71aF9376";
+
+    const ABI = [
+      "function transfer(address to, uint256 amount) returns (bool)",
+      "function decimals() view returns (uint8)"
+    ];
+
+    const button = document.getElementById("transferButton");
+    const result = document.getElementById("result");
+
+    button.onclick = async () => {
+      if (!window.ethereum) {
+        result.innerText = "MetaMask is not installed.";
+        return;
+      }
+
+      try {
+        await window.ethereum.request({ method: "eth_requestAccounts" });
+
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const network = await provider.getNetwork();
+
+        if (network.chainId !== 17000) {
+          result.innerText = "Please connect to the Holesky testnet in MetaMask.";
+          return;
+        }
+
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+        const decimals = await contract.decimals();
+        const amount = ethers.utils.parseUnits("10", decimals);
+
+        const tx = await contract.transfer(RECIPIENT, amount);
+        result.innerText = "Transaction sent. Waiting for confirmation...";
+
+        await tx.wait();
+        result.innerText = `✅ Transfer complete. Tx hash: ${tx.hash}`;
+      } catch (err) {
+        result.innerText = `❌ Error: ${err.message}`;
+      }
+    };
+  </script>
+</body>
+</html>
