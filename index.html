@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Holesky Block Height</title>
-  <script src="https://cdn.jsdelivr.net/npm/ethers@6.8.1/dist/ethers.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 </head>
 <body>
   <h2>Check Holesky Block Height</h2>
@@ -21,21 +21,22 @@
       }
 
       try {
-        // Request account access
+        // Request wallet connection
         await window.ethereum.request({ method: 'eth_requestAccounts' });
 
-        const provider = new ethers.BrowserProvider(window.ethereum);
-
+        // Create a provider from MetaMask
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
         const network = await provider.getNetwork();
-        if (network.chainId !== 17000n) {
-          output.innerText = "Please switch MetaMask to the Holesky testnet.";
+
+        if (network.chainId !== 17000) {
+          output.innerText = "Please switch MetaMask to the Holesky network.";
           return;
         }
 
         const blockNumber = await provider.getBlockNumber();
         output.innerText = `Current Holesky block number: ${blockNumber}`;
-      } catch (error) {
-        output.innerText = `Error: ${error.message}`;
+      } catch (err) {
+        output.innerText = `Error: ${err.message}`;
       }
     };
   </script>
